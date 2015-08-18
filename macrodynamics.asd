@@ -27,5 +27,6 @@
   :components
   ((:module :test
             :components ((:file "package")
+                         (:file "macros")
                          (:file "macrodynamics-test"))))
-  :depends-on (:macrodynamics :stefil))
+  :depends-on (:macrodynamics :stefil :check-it))
