@@ -1,7 +1,7 @@
 (in-package :cl-user)
 
 (defpackage :macrodynamics
-  (:use :cl :alexandria :interface)
+  (:use :cl :alexandria)
   (:export #:ct-let
            #:ct-let*
            #:ct-flet

@@ -13,7 +13,7 @@
             :components ((:file "package")
                          (:file "macrodynamics"))
             :serial t))
-  :depends-on (:alexandria :lisp-interface-library)
+  :depends-on (:alexandria)
   :in-order-to ((test-op (load-op :macrodynamics-test)))
   :perform (test-op :after (op c)
                     (funcall
