@@ -10,7 +10,7 @@
     (let-map ((a (+ x x)))
       (let-map ((b (+ a a)))
         (let ((check-it:*num-trials* 10))
-          (check-that (progn
-                        (format t "~&~A ~A ~A ~A~%" x y a b)
-                        (= a a))))))))
-
+          (is
+           (check-that (progn
+                         (format t "~&~A ~A ~A ~A~%" x y a b)
+                         (= a a)))))))))
