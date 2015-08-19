@@ -2,6 +2,7 @@
 
 (defparameter *var-space* nil)
 (defparameter *fun-space* nil)
+(defparameter *dynenv* nil)
 
 (defun get-assoc (item alist &rest keys &key key test test-not)
   (declare (ignore key test test-not))
@@ -79,8 +80,8 @@
       (with-gensyms (var-expansion var-expanded-p fun-expansion fun-expanded-p)
         `(defmacro ,name (,@lambda-list
                           ,@(unless env-param `(&environment ,actual-env-param)))
-           ,@declarations
            ,@(ensure-list docstring)
+           ,@declarations
            (multiple-value-bind (,var-expansion ,var-expanded-p)
                (macroexpand-1 'var-space ,actual-env-param)
              (multiple-value-bind (,fun-expansion ,fun-expanded-p)
