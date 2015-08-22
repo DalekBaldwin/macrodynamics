@@ -7,10 +7,13 @@
 (defsystem :macrodynamics
   :name "macrodynamics"
   :serial t
+  :author "Kyle Littler"
+  :license "LLGPL"
   :components
   ((:static-file "macrodynamics.asd")
    (:module :src
             :components ((:file "package")
+                         (:file "util")
                          (:file "macrodynamics"))
             :serial t))
   :depends-on (:alexandria)

@@ -7,12 +7,13 @@
            #:ct-flet
            #:ct-labels
            #:def-dynenv-macro
+           #:with-dynenv
+           #:def-dynenv-var
+           #:def-dynenv-fun
+           #:def-unbound-dynenv-fun
+           #:dynenv-function
            #:unbound-dynenv-macro-var
-           #:unbound-dynenv-macro-fun
-           #:ct-get
-           #:ct-get-fun
-           #:ct-call
-           #:ct-apply))
+           #:unbound-dynenv-macro-fun))
 
 (in-package :macrodynamics)
 
