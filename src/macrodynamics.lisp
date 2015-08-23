@@ -30,8 +30,8 @@
 
 (defmacro def-dynenv-var (var &optional (val nil val-supplied))
   (let ((gvar (gensym (symbol-name var))))
-    `(progn
-       (defvar ,gvar ,@(when val-supplied (list val)))
+    `(eval-when (:compile-toplevel :execute)
+       (defvar ,gvar ,@(when val-supplied (list `(load-time-value ,val))))
        (setf (get ',var 'dynenv-var) ',gvar)
        (define-symbol-macro ,var (get-dynenv-var ',var)))))
 
@@ -62,7 +62,7 @@
 (defmacro def-unbound-dynenv-fun (name)
   (let ((call-args (make-symbol "ARGS"))
         (gname (gensym (symbol-name name))))
-    `(progn
+    `(eval-when (:compile-toplevel :execute)
        (defvar ,gname)
        (setf (get ',name 'dynenv-fun) ',gname)
        (defmacro ,name (&rest ,call-args)
@@ -71,7 +71,7 @@
 (defmacro def-dynenv-fun (name args &body body)
   (let ((call-args (make-symbol "ARGS"))
         (gname (gensym (symbol-name name))))
-    `(progn
+    `(eval-when (:compile-toplevel :execute)
        (defvar ,gname (lambda (,@args) ,@body))
        (setf (get ',name 'dynenv-fun) ',gname)
        (defmacro ,name (&rest ,call-args)
