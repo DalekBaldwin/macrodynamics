@@ -81,67 +81,87 @@
   (with-gensyms (new-var-space accum item name value)
     (let ((gnames (loop for binding in bindings
                      collect (gensym (symbol-name (first binding))))))
-      `(let (,@(loop for binding in bindings
-                  for gname in gnames
-                  collect `(,gname ,(second binding))))
-         (let ((,new-var-space
-                (reduce (lambda (,accum ,item)
-                          (destructuring-bind (,name . ,value) ,item
-                            (update-alist ,name ,value ,accum)))
-                        (list
-                         ,@(mapcar (lambda (binding gname)
-                                     `(cons ',(first binding) ,gname))
-                                   bindings
-                                   gnames))
-                        :initial-value *var-space*)))
-           `(symbol-macrolet ((var-space ,,new-var-space))
-              ,(let ((*var-space* ,new-var-space))
-                    ,@body)))))))
+      `(cond
+         (*within-captured-dynenv*
+          (let (,@(loop for binding in bindings
+                     for gname in gnames
+                     collect `(,gname ,(second binding))))
+            (let ((,new-var-space
+                   (reduce (lambda (,accum ,item)
+                             (destructuring-bind (,name . ,value) ,item
+                               (update-alist ,name ,value ,accum)))
+                           (list
+                            ,@(mapcar (lambda (binding gname)
+                                        `(cons ',(first binding) ,gname))
+                                      bindings
+                                      gnames))
+                           :initial-value *var-space*)))
+              `(symbol-macrolet ((var-space ,,new-var-space))
+                 ,(let ((*var-space* ,new-var-space))
+                       ,@body)))))
+         (t
+          (error
+           "No macrodynamic environment has been captured to establish CT-LET bindings."))))))
 
 (defmacro ct-let* (bindings &body body)
   (with-gensyms (new-var-space)
-    (cond
-      ((endp bindings)
-       `(progn ,@body))
-      (t
-       (destructuring-bind (name value) (first bindings)
-         `(let ((,new-var-space
-                 (update-alist ',name ,value) *var-space*))
-            `(symbol-macrolet ((var-space ,,new-var-space))
-               ,(let ((*var-space* ,new-var-space))
-                     (ct-let* (,@(rest bindings))
-                       ,@body)))))))))
+    `(cond
+       (*within-captured-dynenv*
+        ,(cond
+          ((endp bindings)
+           `(progn ,@body))
+          (t
+           (destructuring-bind (name value) (first bindings)
+             `(let ((,new-var-space
+                     (update-alist ',name ,value) *var-space*))
+                `(symbol-macrolet ((var-space ,,new-var-space))
+                   ,(let ((*var-space* ,new-var-space))
+                         (ct-let* (,@(rest bindings))
+                           ,@body))))))))
+       (t
+        (error
+         "No macrodynamic environment has been captured to establish CT-LET* bindings.")))))
 
 (defmacro ct-flet (definitions &body body)
   (with-gensyms (new-fun-space)
-    (cond
-      ((endp definitions)
-       `(progn ,@body))
-      (t
-       (destructuring-bind (name args &body fun-body) (first definitions)
-         `(let ((,new-fun-space
-                 (update-alist ',name (lambda (,@args) ,@fun-body) *fun-space*)))
-            `(symbol-macrolet ((fun-space ,,new-fun-space))
-               ,(let ((*fun-space* ,new-fun-space))
-                     (ct-flet (,@(rest definitions))
-                       ,@body)))))))))
+    `(cond
+       (*within-captured-dynenv*
+        ,(cond
+          ((endp definitions)
+           `(progn ,@body))
+          (t
+           (destructuring-bind (name args &body fun-body) (first definitions)
+             `(let ((,new-fun-space
+                     (update-alist ',name (lambda (,@args) ,@fun-body) *fun-space*)))
+                `(symbol-macrolet ((fun-space ,,new-fun-space))
+                   ,(let ((*fun-space* ,new-fun-space))
+                         (ct-flet (,@(rest definitions))
+                           ,@body))))))))
+       (t
+        (error
+         "No macrodynamic environment has been captured to establish CT-FLET bindings.")))))
 
 ;; mutual recursion? would that make sense with essentially dynamic funs?
 ;; how about call-next-fun capability?
 (defmacro ct-labels (definitions &body body)
   (with-gensyms (new-fun-space)
-    (cond
-      ((endp definitions)
-       `(progn ,@body))
-      (t
-       (destructuring-bind (name args &body fun-body) (first definitions)
-         `(let ((,new-fun-space
-                 (update-alist ',name (named-lambda ,name (,@args) ,@fun-body)
-                               *fun-space*)))
-            `(symbol-macrolet ((fun-space ,,new-fun-space))
-               ,(let ((*fun-space* ,new-fun-space))
-                     (ct-flet (,@(rest definitions))
-                       ,@body)))))))))
+    `(cond
+       (*within-captured-dynenv*
+        ,(cond
+          ((endp definitions)
+           `(progn ,@body))
+          (t
+           (destructuring-bind (name args &body fun-body) (first definitions)
+             `(let ((,new-fun-space
+                     (update-alist ',name (named-lambda ,name (,@args) ,@fun-body)
+                                   *fun-space*)))
+                `(symbol-macrolet ((fun-space ,,new-fun-space))
+                   ,(let ((*fun-space* ,new-fun-space))
+                         (ct-flet (,@(rest definitions))
+                           ,@body))))))))
+       (t
+        (error
+         "No macrodynamic environment has been captured to establish CT-LABELS bindings.")))))
 
 (defmacro with-dynenv (environment &body body)
   "Macro for capturing a dynenv within another macro's body."
