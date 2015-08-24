@@ -2,9 +2,9 @@
 
 [![Build Status](https://travis-ci.org/DalekBaldwin/macrodynamics.svg?branch=master)](https://travis-ci.org/DalekBaldwin/macrodynamics)
 
-Macrodynamics is a language extension that broadens the notion of dynamic scope inside macroexpansion code. Macrodynamic bindings are scoped not just to the code called during an individual expansion, but also to subsequent expansions of the code returned within that dynamic scope. In short, you can write macros that behave as if they were expanded recursively instead of iteratively.
+Macrodynamics is a language extension that broadens the notion of dynamic scope inside macroexpansion code. Macrodynamic bindings are scoped not just to the code called during an individual expansion, but also to subsequent expansions of the code returned within the dynamic scope of those bindings.
 
-This goes a long way toward rectifying a major limitation of Common Lisp, described in detail [here](http://qiita.com/guicho271828/items/07ba4ff11bff494dc03f). However, macrodynamics only handles dynamic bindings meant to send information downstream from where they are bound; it does not provide an analogue of the condition system or continuations to transmit information upstream.
+This goes a long way toward rectifying a major limitation of Common Lisp, described in detail [here](http://qiita.com/guicho271828/items/07ba4ff11bff494dc03f). In short, you can write macros that behave as if they were expanded recursively instead of iteratively. However, macrodynamics only lets data flow downstream from where it is bound; it does not provide analogues of conditions or continuations to transmit information back up the expansion stack.
 
 ## Usage
 
@@ -29,29 +29,48 @@ Macrodynamic variables and functions live in a separate namespace from regular L
 To define macros that need to read or bind macrodynamic entities within the dynamic scope of their expander code, you can use `def-dynenv-macro`:
 
 ```lisp
+(def-dynenv-var **a-macrodynamic-var** nil)
+
 (def-dynenv-macro some-macro (&body body)
   `(do-stuff
        ,(do-something)
-     ,(ct-let ((**a-macrodynamic-variable**
-                (non-destructively-augment **a-macrodynamic-variable**)))
+     ,(ct-let ((**a-macrodynamic-var**
+                (non-destructively-augment **a-macrodynamic-var**)))
         `(progn ,@body))))
 
 ;; this function will signal an error if not called within the dynamic scope
 ;; of a macrodynamic macro's expansion
 (defun do-something ()
-  (generate-code-with **a-macrodynamic-variable**))
+  (generate-code-with **a-macrodynamic-var**))
+
+(defmacro dummy-wrapper-for-some-macro (&body body)
+  `(some-macro ,@body))
 ```
+
+Then if you write a form like this:
+
+```lisp
+(some-macro
+  (dummy-wrapper-for-some-macro
+    (some-macro
+      (some-other-code))))
+```
+
+`do-something` will see the global binding `nil` for `**a-macrodynamic-var**` during the expansion of the top-level `some-macro` form, then it will see a new binding equivalent to `(non-destructively-augment nil)` in the expansion of the `some-macro` form that `dummy-wrapper-for-some-macro`'s expansion returns, then another new binding equivalent to `(non-destructively-augment (non-destructively-augment nil))` in the innermost `some-macro` expansion.
 
 `def-dynenv-macro` is just a convenience macro that can extract the macrodynamic context from the lexical environment regardless of whether you include an `&environment` parameter. Alternatively, you can explicitly pass an environment to `with-dynenv` at the top of a macro's body (or at least surrounding any forms that need to bind or reference macrodynamic entities). This makes it easier to integrate macrodynamics with any other special macro-defining-macros you might want to use.
 
 ```lisp
-(def-special-macro-using-some-other-macro-library some-macro (&body body &environment env)
+(def-macro-using-some-other-macro-library some-macro
+    (&body body &environment env)
   (with-dynenv env
     `(do-stuff
          ,(do-something)
-       ,(ct-let ((**a-macrodynamic-variable**
-                  (non-destructively-augment **a-macrodynamic-variable**)))
-          `(progn ,@body)))))
+       ,(ct-let ((**a-macrodynamic-var**
+                  (non-destructively-augment **a-macrodynamic-var**)))
+          (remember-that-you-can-also-see-the-new-value-of **a-macrodynamic-var**
+             immediately-right-here-in-the-same-expansion-step!
+             `(progn ,@body))))))
 ```
 
 This library is meant to be used in a purely functional manner, and it will signal an error if you attempt to set, rather than bind, a macrodynamic entity. That's right, dynamic scope is compatible with functional programming; it just admits a slightly looser definition of referential transparency. You can think of dynamic variables as an implicit set of additional arguments passed to every function. When dynamic bindings are in play, a function called with the same arguments may not always return the same results, but a function called at the top-level with the same arguments always will. What this means for macrodynamics is that an entire top-level form will always have the same macroexpansion. Normally, this is all you really care about, since you spend most of your time reasoning about top-level forms that you can see in their entirety.
