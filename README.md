@@ -4,7 +4,7 @@
 
 Macrodynamics is a language extension that broadens the notion of dynamic scope inside macroexpansion code. Macrodynamic bindings are scoped not just to the code called during an individual expansion, but also to subsequent expansions of the code returned within that dynamic scope. In short, you can write macros that behave as if they were expanded recursively instead of iteratively.
 
-This goes a long way toward rectifying a major limitation of Common Lisp, described in detail [here](http://qiita.com/guicho271828/items/07ba4ff11bff494dc03f). However, macrodynamics only handles dynamic bindings meant to be send information downstream from where they are bound; it does not provide an analogue of the condition system or continuations to transmit information upstream.
+This goes a long way toward rectifying a major limitation of Common Lisp, described in detail [here](http://qiita.com/guicho271828/items/07ba4ff11bff494dc03f). However, macrodynamics only handles dynamic bindings meant to send information downstream from where they are bound; it does not provide an analogue of the condition system or continuations to transmit information upstream.
 
 ## Usage
 
@@ -24,7 +24,7 @@ For macrodynamic functions, `def-dynenv-fun` works like `defun`, while `def-unbo
 (def-unbound-dynenv-fun **my-unbound-macrodynamic-fun**)
 ```
 
-Macrodynamic variables and functions live in a separate namespace from regular Lisp variables and functions. To establish bindings for them, you must choose one of a few dynamic-only compile-time variants of familiar operators. `ct-let` and `ct-let*` bind variables, and `ct-flet` and `ct-labels` bind functions. You can also retrieve bound functions as values using `dynenv-function` instead of `function` or `#'`.
+Macrodynamic variables and functions live in a separate namespace from regular Lisp variables and functions. To establish bindings for them, you must use one of a few dynamic-only compile-time variants of familiar operators. `ct-let` and `ct-let*` bind variables, and `ct-flet` and `ct-labels` bind functions. You can also retrieve bound functions as values using `dynenv-function` instead of `function` or `#'`.
 
 To define macros that need to read or bind macrodynamic entities within the dynamic scope of their expander code, you can use `def-dynenv-macro`:
 
@@ -56,7 +56,7 @@ To define macros that need to read or bind macrodynamic entities within the dyna
 
 This library is meant to be used in a purely functional manner, and it will signal an error if you attempt to set, rather than bind, a macrodynamic entity. That's right, dynamic scope is compatible with functional programming; it just admits a slightly looser definition of referential transparency. You can think of dynamic variables as an implicit set of additional arguments passed to every function. When dynamic bindings are in play, a function called with the same arguments may not always return the same results, but a function called at the top-level with the same arguments always will. What this means for macrodynamics is that an entire top-level form will always have the same macroexpansion. Normally, this is all you really care about, since you spend most of your time reasoning about top-level forms that you can see in their entirety.
 
-One drawback is that you won't always be able to use SLIME's `C-c C-m` to verify what a non-toplevel expression will expand into, but this is a limitation you already accept any time you use `macrolet` or `symbol-macrolet`. Macrodynamics are no more dangerous than lexically-bound macros; in fact, they're just an abstraction layer built on top of `symbol-macrolet`.
+One drawback is that you won't always be able to use SLIME's `C-c C-m` to verify what a non-top-level expression will expand into, but this is no different from any other situation in which you migth use `macrolet` or `symbol-macrolet`. Macrodynamics are no more dangerous than lexically-bound macros; in fact, they're just an abstraction layer built on top of `symbol-macrolet`.
 
 ## But Why?
 
