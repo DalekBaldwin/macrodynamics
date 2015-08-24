@@ -56,7 +56,7 @@ To define macros that need to read or bind macrodynamic entities within the dyna
 
 This library is meant to be used in a purely functional manner, and it will signal an error if you attempt to set, rather than bind, a macrodynamic entity. That's right, dynamic scope is compatible with functional programming; it just admits a slightly looser definition of referential transparency. You can think of dynamic variables as an implicit set of additional arguments passed to every function. When dynamic bindings are in play, a function called with the same arguments may not always return the same results, but a function called at the top-level with the same arguments always will. What this means for macrodynamics is that an entire top-level form will always have the same macroexpansion. Normally, this is all you really care about, since you spend most of your time reasoning about top-level forms that you can see in their entirety.
 
-One drawback is that you won't always be able to use SLIME's `C-c C-m` to verify what a non-top-level expression will expand into, but this is no different from any other situation in which you migth use `macrolet` or `symbol-macrolet`. Macrodynamics are no more dangerous than lexically-bound macros; in fact, they're just an abstraction layer built on top of `symbol-macrolet`.
+One drawback is that you won't always be able to use SLIME's `C-c C-m` to verify what a non-top-level expression will expand into, but this is no different from any other situation in which you might use `macrolet` or `symbol-macrolet`. Macrodynamics are no more dangerous than lexically-bound macros; in fact, they're just an abstraction layer built on top of `symbol-macrolet`.
 
 ## But Why?
 
