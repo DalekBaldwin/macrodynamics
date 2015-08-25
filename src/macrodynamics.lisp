@@ -4,6 +4,10 @@
 (defparameter *fun-space* nil)
 (defparameter *within-captured-dynenv* nil)
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (define-symbol-macro -unbound- (load-time-value *unbound*)))
+(defvar *unbound* (make-symbol "UNBOUND"))
+
 (defun get-dynenv-var (var)
   (let ((dynenv-var (get var 'dynenv-var)))
     (cond
@@ -63,8 +67,8 @@
   (let ((call-args (make-symbol "ARGS"))
         (gname (gensym (symbol-name name))))
     `(eval-when (:compile-toplevel :execute)
-       (defmacro ,name (&rest ,call-args)
-         `(funcall (dynenv-function ,',name) ,@,call-args))
+       (defun ,name (&rest ,call-args)
+         (apply (dynenv-function ,name) ,call-args))
        (defvar ,gname)
        (setf (get ',name 'dynenv-fun) ',gname))))
 
@@ -72,8 +76,8 @@
   (let ((call-args (make-symbol "ARGS"))
         (gname (gensym (symbol-name name))))
     `(eval-when (:compile-toplevel :execute)
-       (defmacro ,name (&rest ,call-args)
-         `(funcall (dynenv-function ,',name) ,@,call-args))
+       (defun ,name (&rest ,call-args)
+         (apply (dynenv-function ,name) ,call-args))
        (defvar ,gname (lambda (,@args) ,@body))
        (setf (get ',name 'dynenv-fun) ',gname))))
 
@@ -123,7 +127,7 @@
          "No macrodynamic environment has been captured to establish CT-LET* bindings.")))))
 
 (defmacro ct-flet (definitions &body body)
-  (with-gensyms (new-fun-space)
+  (with-gensyms (new-fun-space new-args next-fun orig-args)
     `(cond
        (*within-captured-dynenv*
         ,(cond
@@ -132,7 +136,26 @@
           (t
            (destructuring-bind (name args &body fun-body) (first definitions)
              `(let ((,new-fun-space
-                     (update-alist ',name (lambda (,@args) ,@fun-body) *fun-space*)))
+                     (update-alist
+                      ',name
+                      (let ((,next-fun
+                             (handler-case
+                                 (dynenv-function ,name)
+                               (unbound-dynenv-macro-fun ()
+                                 -unbound-))))
+                        (lambda (&rest ,orig-args)
+                          (flet ((call-next-dynenv-fun (&rest ,new-args)
+                                   (case ,next-fun
+                                     (-unbound-
+                                      (error
+                                       "No next dynenv function named: ~A"
+                                       ',name))
+                                     (otherwise
+                                      (apply ,next-fun
+                                             (if ,new-args ,new-args ,orig-args))))))
+                            (destructuring-bind ,args ,orig-args
+                              ,@fun-body))))
+                      *fun-space*)))
                 `(symbol-macrolet ((fun-space ,,new-fun-space))
                    ,(let ((*fun-space* ,new-fun-space))
                          (ct-flet (,@(rest definitions))
@@ -140,28 +163,6 @@
        (t
         (error
          "No macrodynamic environment has been captured to establish CT-FLET bindings.")))))
-
-;; mutual recursion? would that make sense with essentially dynamic funs?
-;; how about call-next-fun capability?
-(defmacro ct-labels (definitions &body body)
-  (with-gensyms (new-fun-space)
-    `(cond
-       (*within-captured-dynenv*
-        ,(cond
-          ((endp definitions)
-           `(progn ,@body))
-          (t
-           (destructuring-bind (name args &body fun-body) (first definitions)
-             `(let ((,new-fun-space
-                     (update-alist ',name (named-lambda ,name (,@args) ,@fun-body)
-                                   *fun-space*)))
-                `(symbol-macrolet ((fun-space ,,new-fun-space))
-                   ,(let ((*fun-space* ,new-fun-space))
-                         (ct-flet (,@(rest definitions))
-                           ,@body))))))))
-       (t
-        (error
-         "No macrodynamic environment has been captured to establish CT-LABELS bindings.")))))
 
 (defmacro with-dynenv (environment &body body)
   "Macro for capturing a dynenv within another macro's body."

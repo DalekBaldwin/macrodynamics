@@ -5,7 +5,7 @@
   (:export #:ct-let
            #:ct-let*
            #:ct-flet
-           #:ct-labels
+           #:call-next-dynenv-fun
            #:def-dynenv-macro
            #:with-dynenv
            #:def-dynenv-var
