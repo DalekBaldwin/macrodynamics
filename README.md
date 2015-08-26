@@ -24,7 +24,9 @@ For macrodynamic functions, `def-dynenv-fun` works like `defun`, while `def-unbo
 (def-unbound-dynenv-fun **my-unbound-macrodynamic-fun**)
 ```
 
-Macrodynamic variables and functions live in a separate namespace from regular Lisp variables and functions. To establish bindings for them, you must use one of a few dynamic-only compile-time variants of familiar operators. `ct-let` and `ct-let*` bind variables, and `ct-flet` and `ct-labels` bind functions. You can also retrieve bound functions as values using `dynenv-function` instead of `function` or `#'`.
+Macrodynamic variables and functions live in a separate namespace from regular Lisp variables (whether lexical or dynamic) and functions. To establish bindings for them, you must use one of a few dynamic-only compile-time variants of familiar operators. `ct-let` and `ct-let*` bind variables, and `ct-flet` binds functions.
+
+Within the body of any function definition created with `ct-flet`, the function name `call-next-dynenv-fun` is bound (lexically, not dynamically!) to the previously dynamically-bound function with the same name. But any recursive invocation of the function by name, even within a call to `call-next-dynenv-fun`, will always invoke the most recently dynamically-bound function. You can also retrieve dynamically-bound functions as values using `dynenv-function` instead of `function` or `#'`. `function`/`#'` simply retrieves a wrapper for calling the dynamically-bound function, which may be rebound between the time you retrieve the wrapper and the time you invoke it. For more details, see Pascal Costanza's [paper](http://www.p-cos.net/documents/dynfun.pdf) on dynamically-scoped functions.
 
 To define macros that need to read or bind macrodynamic entities within the dynamic scope of their expander code, you can use `def-dynenv-macro`:
 
