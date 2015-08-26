@@ -4,12 +4,15 @@
 
 (defsuite* test-all)
 
+(defmacro wrap-let-map (bindings &body body)
+  `(let-map ,bindings ,@body))
+
 (deftest test-contextual-dsl ()
   (with-generators ((x (generator (integer)))
                     (y (generator (integer))))
     (let-map ((a (+ x x)))
       (let ((z 3))
-        (let-map ((b (+ a a)))
+        (wrap-let-map ((b (+ a a)))
           (let ((check-it:*num-trials* 10))
             (is
              (check-that (progn
@@ -21,7 +24,7 @@
                   (y (generator (integer))))
   (let-map ((a (+ x x)))
     (let ((z 3))
-      (let-map ((b (+ a a)))
+      (wrap-let-map ((b (+ a a)))
         (let ((check-it:*num-trials* 10))
           (is
            (check-that (progn
