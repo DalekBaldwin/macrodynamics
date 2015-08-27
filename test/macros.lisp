@@ -70,7 +70,11 @@
                                                            ,@mapping-symbols))
                                        ,@map-body)))
            ,(ct-let ((**mappings**
-                      (union new-mappings **mappings** :key #'first)))
+                      (reduce (lambda (accum item)
+                                (destructuring-bind (symbol . data) item
+                                  (macrodynamics::update-alist symbol data accum)))
+                              new-mappings
+                              :initial-value **mappings**)))
                     `(progn ,@body)))))))
 
 #+nil
