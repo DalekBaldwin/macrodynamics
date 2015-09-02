@@ -13,6 +13,7 @@
   :long-description
   #.(uiop:read-file-string
      (uiop:subpathname *load-pathname* "README.md"))
+  :homepage "https://github.com/DalekBaldwin/macrodynamics"
   :components
   ((:static-file "macrodynamics.asd")
    (:module :src
@@ -30,6 +31,8 @@
 (defsystem :macrodynamics-test
   :name "macrodynamics-test"
   :serial t
+  :author "Kyle Littler"
+  :license "LLGPL"
   :description "Tests for macrodynamics."
   :components
   ((:module :test
