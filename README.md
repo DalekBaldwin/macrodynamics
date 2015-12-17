@@ -60,7 +60,7 @@ Then if you write a form like this:
 
 `do-something` will see the global binding `nil` for `**a-macrodynamic-var**` during the expansion of the top-level `some-macro` form, then it will see a new binding equivalent to `(non-destructively-augment nil)` in the expansion of the `some-macro` form that `dummy-wrapper-for-some-macro`'s expansion returns, then another new binding equivalent to `(non-destructively-augment (non-destructively-augment nil))` in the innermost `some-macro` expansion.
 
-`def-dynenv-macro` is just a convenience macro that can extract the macrodynamic context from the lexical environment regardless of whether you include an `&environment` parameter. Alternatively, you can explicitly pass an environment to `with-dynenv` at the top of a macro's body (or at least surrounding any forms that need to bind or reference macrodynamic entities). This makes it easier to integrate macrodynamics with any other special macro-defining-macros you might want to use.
+`def-dynenv-macro` is just a convenience macro that can extract the macrodynamic context from the lexical environment regardless of whether you include an `&environment` parameter. (An analogous `dynenv-macrolet` macro is also provided.) Alternatively, you can explicitly pass an environment to `with-dynenv` at the top of a macro's body (or at least surrounding any forms that need to bind or reference macrodynamic entities). This makes it easier to integrate macrodynamics with any other special macro-defining-macros you might want to use.
 
 ```lisp
 (def-macro-using-some-other-macro-library some-macro

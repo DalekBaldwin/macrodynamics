@@ -7,6 +7,7 @@
            #:ct-flet
            #:call-next-dynenv-fun
            #:def-dynenv-macro
+           #:dynenv-macrolet
            #:with-dynenv
            #:def-dynenv-var
            #:def-dynenv-fun

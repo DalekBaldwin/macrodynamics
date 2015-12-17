@@ -188,6 +188,23 @@
          (with-dynenv ,actual-env-param
            ,@remaining-forms)))))
 
+(defmacro dynenv-macrolet (definitions &body body)
+  `(macrolet
+       (,@(loop for definition in definitions
+             collect
+               (destructuring-bind (name lambda-list &rest body) definition
+                 (let* ((env-param (cadr (member '&environment lambda-list)))
+                        (actual-env-param (or env-param (gensym "ENV"))))
+                   (multiple-value-bind (remaining-forms declarations docstring)
+                       (parse-body body :documentation t :whole t)
+                     `(,name (,@lambda-list
+                              ,@(unless env-param `(&environment ,actual-env-param)))
+                             ,@declarations
+                             ,@(ensure-list docstring)
+                             (with-dynenv ,actual-env-param
+                               ,@remaining-forms)))))))
+     ,@body))
+
 (define-condition unbound-dynenv-macro-var ()
   ((var
     :initarg :var
