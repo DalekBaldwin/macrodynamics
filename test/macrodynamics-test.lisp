@@ -26,6 +26,7 @@
                             (ct-let ((**test-var** (1+ **test-var**)))
                               `(progn ,@body)))
                       (derp (thing)
-                            `(list* ,**test-var** ,thing)))
+                            (let ((stuff **test-var**))
+                              `(list* ,stuff ,thing))))
       (derp (herp (derp (herp (derp (herp (derp (herp (derp nil))))))))))
     (list 0 1 2 3 4))))
