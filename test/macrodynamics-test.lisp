@@ -19,8 +19,6 @@
                            (format t "~&~A ~A ~A ~A~%" x y a b)
                            (= a a))))))))))
 
-(def-dynenv-var **test-var** 0)
-
 (deftest test-dynenv-macrolet ()
   (is
    (equal
