@@ -5,6 +5,8 @@
 
 (def-dynenv-fun **blurf** (&rest x) (apply #'union x))
 
+(def-dynenv-var **test-var-different-file** 0)
+
 #+nil
 (def-dynenv-macro with-generators (bindings &body body)
   (let ((symbols (mapcar #'first bindings)))
