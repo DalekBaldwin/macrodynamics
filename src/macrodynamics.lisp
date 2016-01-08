@@ -9,8 +9,8 @@
 (defvar *unbound* (make-symbol "UNBOUND"))
 
 (defvar *eval-phases*
-  #+clisp '(:compile-toplevel :execute)
-  #-clisp '(:compile-toplevel :load-toplevel :execute))
+  #+(or clisp ecl) '(:compile-toplevel :execute)
+  #-(or clisp ecl) '(:compile-toplevel :load-toplevel :execute))
 
 (defun get-dynenv-var (var)
   (let ((dynenv-var (get var 'dynenv-var)))
