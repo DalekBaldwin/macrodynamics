@@ -1,6 +1,7 @@
 # Macrodynamics
 
 [![Build Status](https://travis-ci.org/DalekBaldwin/macrodynamics.svg?branch=master)](https://travis-ci.org/DalekBaldwin/macrodynamics)
+[![Quicklisp](http://quickdocs.org/badge/macrodynamics.svg)](http://quickdocs.org/macrodynamics/)
 
 Macrodynamics is a language extension that broadens the notion of dynamic scope inside macroexpansion code. Macrodynamic bindings are scoped not just to the code called during an individual expansion, but also to subsequent expansions of the code returned within the dynamic scope of those bindings.
 
