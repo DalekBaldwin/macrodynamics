@@ -14,6 +14,14 @@ env:
 #    - LISP=cmucl # /home/travis/.cim/bin/cl: 4: .: Can't open /home/travis/.cim/config/current.3271
     - LISP=ecl
 
+# everything requiring i386 is barfing right now
+matrix:
+  allow_failures:
+    - env: LISP=allegro
+    - env: LISP=sbcl32
+    - env: LISP=ccl32
+    - env: LISP=clisp32
+
 install:
   - if [ -x ./install.sh ] && head -2 ./install.sh | grep '^# cl-travis' > /dev/null;
     then
