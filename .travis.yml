@@ -33,10 +33,10 @@ install:
 script:
   - cl -e '(in-package :cl-user)'
        -e '(ql:quickload :macrodynamics)'
-       -e '(ql:quickload :macrodynamics-test)'
+       -e '(ql:quickload :macrodynamics/test)'
        -e '(let ((*debugger-hook*
                   (lambda (c h)
                     (declare (ignore h))
                     (print c t)
                     (uiop:quit -1))))
-             ( macrodynamics-test:test-all))'
+             (macrodynamics-test:test-all))'

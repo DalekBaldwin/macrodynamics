@@ -18,8 +18,4 @@
 
 (in-package :macrodynamics)
 
-(defparameter *system-directory*
-  (make-pathname
-   :directory
-   (pathname-directory
-    (asdf:system-definition-pathname "macrodynamics"))))
+(defparameter *system-directory* #.(asdf:system-source-directory "macrodynamics"))
