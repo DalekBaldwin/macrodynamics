@@ -1,7 +1,7 @@
 (in-package :cl-user)
 
 (defpackage :macrodynamics-test
-  (:use :cl :macrodynamics :stefil :alexandria :check-it)
+  (:use :cl :macrodynamics :hu.dwim.stefil :alexandria :check-it)
   (:export
    #:test-all))
 

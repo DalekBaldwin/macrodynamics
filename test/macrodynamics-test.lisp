@@ -1,6 +1,6 @@
 (in-package :macrodynamics-test)
 
-(in-root-suite)
+(hu.dwim.stefil::in-root-suite)
 
 (defsuite* test-all)
 
