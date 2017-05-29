@@ -39,4 +39,4 @@ script:
                     (declare (ignore h))
                     (print c t)
                     (uiop:quit -1))))
-             (macrodynamics-test:test-all))'
+             (fiasco:run-package-tests :package 'macrodynamics-test))'

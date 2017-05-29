@@ -1,9 +1,5 @@
 (in-package :macrodynamics-test)
 
-(hu.dwim.stefil::in-root-suite)
-
-(defsuite* test-all)
-
 (defmacro wrap-let-map (bindings &body body)
   `(let-map ,bindings ,@body))
 

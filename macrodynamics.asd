@@ -29,5 +29,7 @@
             :components ((:file "package")
                          (:file "macros")
                          (:file "macrodynamics-test"))))
-  :depends-on ("macrodynamics" "hu.dwim.stefil" "check-it")
+  :depends-on ("macrodynamics"
+               "fiasco"
+               "check-it")
   :perform (test-op (op c) (symbol-call :macrodynamics-test :test-all)))

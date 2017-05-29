@@ -1,9 +1,11 @@
 (in-package :cl-user)
 
-(defpackage :macrodynamics-test
-  (:use :cl :macrodynamics :hu.dwim.stefil :alexandria :check-it)
-  (:export
-   #:test-all))
+(fiasco:define-test-package :macrodynamics-test
+  (:use :cl
+        :macrodynamics
+        :fiasco
+        :alexandria
+        :check-it))
 
 (in-package :macrodynamics-test)
 
