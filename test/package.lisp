@@ -9,4 +9,4 @@
 
 (in-package :macrodynamics/test)
 
-(defparameter *system-directory* macrodynamics::*system-directory*)
+(defparameter *system-directory* (asdf:system-source-directory "macrodynamics/test"))
