@@ -1,4 +1,4 @@
-(in-package :macrodynamics-test)
+(in-package :macrodynamics/test)
 
 (defmacro wrap-let-map (bindings &body body)
   `(let-map ,bindings ,@body))

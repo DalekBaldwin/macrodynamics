@@ -1,4 +1,4 @@
-(in-package :macrodynamics-test)
+(in-package :macrodynamics/test)
 
 (def-dynenv-var **generator-symbols** nil)
 (def-dynenv-var **mappings** nil)

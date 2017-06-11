@@ -4,6 +4,7 @@
   :serial t
   :author "Kyle Littler"
   :license "LLGPL"
+  :version "0.1"
   :description "A language extension for creating bindings scoped to the entire expansion process of a region of code."
   :homepage "https://github.com/DalekBaldwin/macrodynamics"
   :components
@@ -20,6 +21,7 @@
   :serial t
   :author "Kyle Littler"
   :license "LLGPL"
+  :version (0 1 0)
   :description "Tests for macrodynamics."
   :components
   ((:module :test
@@ -29,4 +31,4 @@
   :depends-on ("macrodynamics"
                "fiasco"
                "check-it")
-  :perform (test-op (op c) (symbol-call :macrodynamics-test :test-all)))
+  :perform (test-op (op c) (symbol-call :macrodynamics/test :test-all)))
