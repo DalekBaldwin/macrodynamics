@@ -21,7 +21,7 @@
   :serial t
   :author "Kyle Littler"
   :license "LLGPL"
-  :version (0 1 0)
+  :version "0.1"
   :description "Tests for macrodynamics."
   :components
   ((:module :test
