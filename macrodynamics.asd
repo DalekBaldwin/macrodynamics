@@ -1,12 +1,10 @@
 ;;;; macrodynamics.asd
 
 (defsystem "macrodynamics"
-  :name "macrodynamics"
   :serial t
   :author "Kyle Littler"
   :license "LLGPL"
   :description "A language extension for creating bindings scoped to the entire expansion process of a region of code."
-  ;;:long-description #.(uiop:read-file-string (uiop:subpathname *load-pathname* "README.md"))
   :homepage "https://github.com/DalekBaldwin/macrodynamics"
   :components
   ((:static-file "macrodynamics.asd")
@@ -19,7 +17,6 @@
   :in-order-to ((test-op (test-op "macrodynamics/test"))))
 
 (defsystem "macrodynamics/test"
-  :name "macrodynamics-test"
   :serial t
   :author "Kyle Littler"
   :license "LLGPL"
