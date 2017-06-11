@@ -8,6 +8,7 @@
                     (y (generator (integer))))
     (let-map ((a (+ x x)))
       (let ((z 3))
+        (declare (ignore z))
         (wrap-let-map ((b (+ a a)))
           (let ((check-it:*num-trials* 10))
             (is

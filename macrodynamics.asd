@@ -4,7 +4,7 @@
   :serial t
   :author "Kyle Littler"
   :license "LLGPL"
-  :version "0.1"
+  :version "0.1.1"
   :description "A language extension for creating bindings scoped to the entire expansion process of a region of code."
   :homepage "https://github.com/DalekBaldwin/macrodynamics"
   :components
@@ -21,7 +21,7 @@
   :serial t
   :author "Kyle Littler"
   :license "LLGPL"
-  :version "0.1"
+  :version "0.1.1"
   :description "Tests for macrodynamics."
   :components
   ((:module :test
