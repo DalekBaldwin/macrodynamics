@@ -18,4 +18,4 @@
 
 (in-package :macrodynamics)
 
-(defparameter *system-directory* #.(asdf:system-source-directory "macrodynamics"))
+(defparameter *system-directory* (asdf:system-source-directory "macrodynamics"))
